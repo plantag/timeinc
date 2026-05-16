@@ -58,21 +58,22 @@
       margin-top: 0.25rem;
     }
 
+    /* Layout : 2 colonnes (zone principale + arbre de Providence) */
     .game-layout {
       display: grid;
-      grid-template-columns: 140px 1fr minmax(300px, 400px);
+      grid-template-columns: 1fr minmax(300px, 400px);
       gap: 0.75rem;
       padding: 0.75rem;
-      max-width: 1600px;
+      max-width: 1400px;
       margin: 0 auto;
       min-height: calc(100vh - 140px);
     }
 
-    @media (max-width: 1100px) {
+    @media (max-width: 1000px) {
       .game-layout { grid-template-columns: 1fr; }
     }
 
-    .timeline-column, .providence-tree {
+    .providence-tree {
       display: flex;
       flex-direction: column;
       border: var(--border);
@@ -80,63 +81,25 @@
       box-shadow: 0 0 15px rgba(255,255,255,0.05), inset 0 0 30px rgba(0,212,255,0.03);
     }
 
-    .timeline-column h2, .providence-tree h2 {
+    .providence-tree h2 {
       font-family: 'Orbitron', sans-serif;
       font-size: 0.65rem;
       letter-spacing: 0.08em;
       text-align: center;
       padding: 0.6rem 0.4rem;
       border-bottom: var(--border-dim);
+      color: var(--gold);
     }
 
-    .providence-tree h2 { color: var(--gold); }
-
-    .timeline-track {
-      flex: 1;
-      display: flex;
-      flex-direction: column-reverse;
-      padding: 0.5rem;
-      gap: 0.4rem;
-      position: relative;
-    }
-
-    .timeline-track::before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 0.5rem;
-      bottom: 0.5rem;
-      width: 2px;
-      background: linear-gradient(to top, var(--accent), var(--purple));
-      transform: translateX(-50%);
-      opacity: 0.4;
-    }
-
-    .milestone-node {
-      position: relative;
-      z-index: 1;
-      padding: 0.45rem 0.35rem;
-      border: var(--border-dim);
-      background: var(--bg);
-      text-align: center;
-      font-size: 0.75rem;
-      transition: all 0.25s;
-    }
-
-    .milestone-node.active {
-      border-color: var(--success);
-      background: rgba(105, 240, 174, 0.08);
-      color: var(--success);
-    }
-
-    .milestone-node .depth { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.9rem; }
-    .milestone-node .label { font-size: 0.6rem; opacity: 0.7; margin-top: 2px; }
-
+    /* Stats PP dans l'arbre */
     .providence-stats {
-      padding: 0.5rem;
-      border-top: var(--border-dim);
-      font-size: 0.65rem;
-      text-align: center;
+      padding: 0.4rem 0.6rem;
+      border-bottom: var(--border-dim);
+      font-size: 0.62rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 0.8rem;
+      justify-content: center;
       line-height: 1.5;
     }
 
@@ -207,7 +170,7 @@
       gap: 0.5rem;
     }
 
-    .building-btn, .click-tier-btn, .skill-btn, .warp-btn {
+    .building-btn, .click-tier-btn, .skill-btn {
       font-family: 'Rajdhani', sans-serif;
       font-weight: 600;
       cursor: pointer;
@@ -224,18 +187,18 @@
 
     .building-btn:hover:not(:disabled),
     .click-tier-btn:hover:not(:disabled),
-    .skill-btn:hover:not(:disabled),
-    .warp-btn:hover:not(:disabled) {
+    .skill-btn:hover:not(:disabled) {
       background: var(--bg-panel-hover);
       box-shadow: 0 0 15px var(--accent-glow);
     }
 
-    .building-btn:disabled, .click-tier-btn:disabled, .skill-btn:disabled, .warp-btn:disabled {
+    .building-btn:disabled, .click-tier-btn:disabled, .skill-btn:disabled {
       opacity: 0.35;
       cursor: not-allowed;
     }
 
     .building-btn.hidden-fog { display: none; }
+    .click-tier-btn.hidden-fog { display: none; }
 
     .building-btn .cost { color: var(--accent); font-size: 0.75rem; }
     .building-btn .owned { color: var(--neon-dim); font-size: 0.7rem; }
@@ -249,15 +212,11 @@
       border-color: var(--gold);
     }
 
-    /* Bâtiment maxé (Effondrement Temporel niveau 1 atteint) */
     .building-btn.maxed-building {
       border-color: var(--success);
       opacity: 0.6;
       cursor: not-allowed;
     }
-
-    /* Amplificateurs de clic masqués (brouillard de guerre) */
-    .click-tier-btn.hidden-fog { display: none; }
 
     .core-area {
       display: flex;
@@ -338,18 +297,47 @@
       to { box-shadow: 0 0 60px var(--accent-glow); }
     }
 
-    .warp-btn {
-      width: 90%;
-      max-width: 360px;
-      text-align: center;
-      border-color: var(--danger) !important;
-      color: var(--danger);
+    /* Bouton Warp — positionné à droite du cercle de clic */
+    #warp-btn {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      padding: 0.4rem 0.65rem;
+      border: 1px solid #ff6b4a;
+      background: rgba(255, 80, 40, 0.07);
+      color: #ff7a5a;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      display: none;
+      z-index: 5;
+      line-height: 1.5;
+      text-align: center;
     }
 
-    .warp-btn.ready {
-      box-shadow: 0 0 20px rgba(255, 82, 82, 0.35);
+    #warp-btn:hover:not(:disabled) {
+      background: rgba(255, 80, 40, 0.22);
+      box-shadow: 0 0 14px rgba(255, 100, 60, 0.5);
+    }
+
+    #warp-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+      animation: none;
+    }
+
+    /* Clignotement fondu fluide : opacity 0.1 → 1.0 */
+    #warp-btn.ready {
+      animation: warpFade 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes warpFade {
+      from { opacity: 0.12; box-shadow: none; }
+      to   { opacity: 1;    box-shadow: 0 0 18px rgba(255, 100, 60, 0.65); border-color: #ff9070; }
     }
 
     .float-text {
@@ -367,6 +355,7 @@
       100% { opacity: 0; transform: translateY(-50px); }
     }
 
+    /* Arbre de Providence */
     .tree-grid {
       flex: 1;
       display: flex;
@@ -426,6 +415,79 @@
     .skill-btn.purchased { border-color: var(--success); background: rgba(105, 240, 174, 0.06); }
     .skill-btn.available { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
 
+    /* ——— Modale Gain Offline ——— */
+    .offline-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 8, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .offline-modal {
+      background: var(--bg-panel);
+      border: var(--border);
+      box-shadow: 0 0 40px var(--accent-glow), inset 0 0 30px rgba(0,212,255,0.04);
+      padding: 2rem 2.5rem;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+    }
+
+    .offline-modal h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      text-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .offline-modal .offline-time {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      color: var(--purple);
+      margin-bottom: 0.5rem;
+    }
+
+    .offline-modal .offline-gain {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      color: var(--success);
+      text-shadow: 0 0 15px rgba(105, 240, 174, 0.5);
+      margin-bottom: 1.5rem;
+    }
+
+    .offline-modal .offline-desc {
+      font-size: 0.75rem;
+      color: var(--neon-dim);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .offline-modal-close {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 0.5rem 1.5rem;
+      border: var(--border);
+      background: var(--bg);
+      color: var(--neon);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .offline-modal-close:hover {
+      background: var(--bg-panel-hover);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    /* Outils dev */
     .dev-tools {
       margin: 0 0.75rem 0.75rem;
       padding: 0.6rem 1rem;
@@ -485,23 +547,25 @@
   </style>
 </head>
 <body>
+
+  <!-- Modale gain offline (cachée par défaut) -->
+  <div class="offline-modal-overlay" id="offline-modal" style="display:none">
+    <div class="offline-modal">
+      <h2>⏱ RETOUR DANS LE TEMPS</h2>
+      <div class="offline-desc">Vous étiez absent pendant</div>
+      <div class="offline-time" id="offline-time-display">—</div>
+      <div class="offline-desc">Vos bâtiments ont continué à travailler :</div>
+      <div class="offline-gain" id="offline-gain-display">+0 SP</div>
+      <button type="button" class="offline-modal-close" id="offline-modal-close">REPRENDRE LA PARTIE</button>
+    </div>
+  </div>
+
   <header>
     <h1>Fabrique de Paradoxes Temporels</h1>
     <p>— Distorsion Chronologique Active —</p>
   </header>
 
   <div class="game-layout">
-    <aside class="timeline-column">
-      <h2>Profondeur Timeline</h2>
-      <div class="timeline-track" id="milestone-track"></div>
-      <div class="providence-stats">
-        <div>Cumulés : <span class="val" id="pp-cumules">0</span></div>
-        <div>En attente : <span class="val" id="pp-pending">0</span></div>
-        <div>Dépensés : <span class="val" id="pp-spent">0</span></div>
-        <div>Disponibles : <span class="val" id="pp-available">0</span></div>
-      </div>
-    </aside>
-
     <main class="main-zone">
       <section class="upgrades-bar">
         <!-- Barre de multiplicateur d'achat -->
@@ -527,13 +591,20 @@
         </div>
         <div class="click-zone" id="click-zone">
           <button type="button" id="paradox-btn">EXTRAIRE<br>LE PARADOXE</button>
-          <button type="button" id="warp-btn" class="warp-btn" disabled>Initier l'Effondrement (Warp)</button>
+          <!-- Petit bouton Warp discret dans le coin -->
+          <button type="button" id="warp-btn" disabled>⚡ WARP</button>
         </div>
       </section>
     </main>
 
     <aside class="providence-tree">
       <h2>Arbre de Providence</h2>
+      <div class="providence-stats">
+        <div>Cumulés : <span class="val" id="pp-cumules">0</span></div>
+        <div>En attente : <span class="val" id="pp-pending">0</span></div>
+        <div>Dépensés : <span class="val" id="pp-spent">0</span></div>
+        <div>Disponibles : <span class="val" id="pp-available">0</span></div>
+      </div>
       <div id="tree-content"></div>
     </aside>
   </div>
@@ -551,28 +622,27 @@
 
   <p class="save-hint">Sauvegarde auto · Les Points de Providence cumulés ne diminuent jamais</p>
 
-  <footer>Alpha 0.0.2 — Fabrique de Paradoxes Temporels</footer>
+  <footer>Alpha 0.0.3 — Fabrique de Paradoxes Temporels</footer>
 
   <script>
-    const SAVE_KEY = 'paradoxFactory_v6';
-    const COST_MULT = 1.15;
-    const CLICK_COST_MULT = 1.2;
+    /* ══════════════════════════════════════════════════════
+       CONSTANTES
+    ══════════════════════════════════════════════════════ */
+    const GAME_VERSION = '0.0.3';
+    const SAVE_KEY     = 'paradoxFactory_v7';
+    const COST_MULT          = 1.15;
+    const CLICK_COST_MULT    = 1.2;
     const CLICK_BONUS_PER_LEVEL = 0.02;
-    const CPS_TICK_MS = 1000;
+    const CPS_TICK_MS  = 1000;
     const HOLD_TICK_MS = 100;
-    const UI_TICK_MS = 100;
+    const UI_TICK_MS   = 100;
+    const OFFLINE_MIN_SECONDS = 10; // seuil pour afficher la popup offline
 
-    // Multiplicateur d'achat courant : 1, 5, 10 ou 'max'
     let buyMultiplier = 1;
 
-    const MILESTONES = [
-      { depth: 1,  label: 'Écho Initial' },
-      { depth: 5,  label: 'Boucle Mineure' },
-      { depth: 10, label: 'Fracture Alpha' },
-      { depth: 15, label: 'Faille Profonde' },
-      { depth: 20, label: 'Horizon Chrono' },
-      { depth: 25, label: 'Nexus Ultime' },
-    ];
+    /* ══════════════════════════════════════════════════════
+       DONNÉES
+    ══════════════════════════════════════════════════════ */
 
     const BUILDINGS = [
       { id: 'dejavu',   name: 'Déjà-vu',              desc: 'Réémet une seconde déjà vécue',    baseCost: 15,     baseCps: 0.1 },
@@ -590,7 +660,6 @@
       { id: 'phase3', name: 'Ampli Phase III', baseCost: 5000, unlockAfter: 'phase2' },
     ];
 
-    // Arbre de Providence — Ancrage Temporel I est la première compétence achetable
     const SKILL_TREE = [
       {
         row: 1,
@@ -634,76 +703,87 @@
       },
     ];
 
+    /* ══════════════════════════════════════════════════════
+       ÉTAT
+    ══════════════════════════════════════════════════════ */
+
     let state = createFreshState();
 
     function createFreshState() {
-      const buildings = {};
+      const buildings  = {};
       const clickTiers = {};
-      const skills = {};
-      BUILDINGS.forEach(b => { buildings[b.id] = 0; });
+      BUILDINGS.forEach(b  => { buildings[b.id]   = 0; });
       CLICK_TIERS.forEach(t => { clickTiers[t.id] = 0; });
       return {
+        gameVersion: GAME_VERSION,
         seconds: 0,
         buildings,
         clickTiers,
-        skills,
+        skills: {},
         providencePointsCumulesTotal: 0,
         providencePointsSpent: 0,
         providencePointsPending: 0,
         metaTreeUnlocked: false,
         collapseProvidenceEverGranted: false,
         runProvidenceGranted: {},
-        permanentBonuses: {
-          clickMult: 0,
-          cpsMult: 0,
-          globalMult: 0,
-          costReduction: 0,
-        },
+        permanentBonuses: { clickMult: 0, cpsMult: 0, globalMult: 0, costReduction: 0 },
+        lastSaveTimestamp: Date.now(),
       };
     }
 
+    /* ══════════════════════════════════════════════════════
+       FORMATAGE
+    ══════════════════════════════════════════════════════ */
+
+    /**
+     * Formate un nombre pour l'affichage.
+     * Pour les petites valeurs décimales (< 1000), on affiche jusqu'à 2 décimales
+     * afin que le joueur voie ses gains de clic précis (ex: +9.42 SP).
+     */
     function formatNum(n) {
       if (!Number.isFinite(n) || n < 0) return '0';
-      if (n < 1000) return Math.floor(n).toLocaleString('fr-FR');
-      if (n < 1e6) return (n / 1e3).toFixed(2) + ' K';
-      if (n < 1e9) return (n / 1e6).toFixed(2) + ' M';
+      if (n < 1000) {
+        // Afficher les décimales si la valeur n'est pas entière
+        if (Number.isInteger(n)) return n.toLocaleString('fr-FR');
+        return parseFloat(n.toFixed(2)).toLocaleString('fr-FR');
+      }
+      if (n < 1e6)  return (n / 1e3).toFixed(2) + ' K';
+      if (n < 1e9)  return (n / 1e6).toFixed(2) + ' M';
       if (n < 1e12) return (n / 1e9).toFixed(2) + ' G';
       return (n / 1e12).toFixed(2) + ' T';
     }
 
-    /* ——————————————————————————————————————
+    function formatDuration(seconds) {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      if (h > 0) return `${h}h ${m}m ${s}s`;
+      if (m > 0) return `${m}m ${s}s`;
+      return `${s}s`;
+    }
+
+    /* ══════════════════════════════════════════════════════
        COÛTS & VISIBILITÉ
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function getBuildingCost(b, owned) {
       const reduction = 1 - state.permanentBonuses.costReduction;
       return Math.floor(b.baseCost * Math.pow(COST_MULT, owned) * reduction);
     }
 
-    /**
-     * Coût total pour acheter `qty` niveaux d'un bâtiment à partir de `owned` niveaux.
-     * Somme géométrique : baseCost * r^owned * (r^qty - 1) / (r - 1)
-     */
     function getBuildingBulkCost(b, owned, qty) {
       const reduction = 1 - state.permanentBonuses.costReduction;
       const r = COST_MULT;
       return Math.floor(b.baseCost * reduction * Math.pow(r, owned) * (Math.pow(r, qty) - 1) / (r - 1));
     }
 
-    /**
-     * Nombre maximum de niveaux achetables pour un bâtiment avec les SP actuels.
-     */
     function getMaxBuildingLevels(b) {
       const owned = state.buildings[b.id] || 0;
       const reduction = 1 - state.permanentBonuses.costReduction;
       const r = COST_MULT;
-      // Résoudre : baseCost * reduction * r^owned * (r^qty - 1) / (r - 1) <= seconds
-      // r^qty <= 1 + seconds * (r-1) / (baseCost * reduction * r^owned)
-      // qty <= log(1 + ...) / log(r)
       const val = 1 + state.seconds * (r - 1) / (b.baseCost * reduction * Math.pow(r, owned));
       if (val <= 1) return 0;
-      const qty = Math.floor(Math.log(val) / Math.log(r));
-      return Math.max(0, qty);
+      return Math.max(0, Math.floor(Math.log(val) / Math.log(r)));
     }
 
     function isBuildingVisible(b) {
@@ -721,18 +801,12 @@
       return Math.floor(tier.baseCost * Math.pow(CLICK_COST_MULT, lvl));
     }
 
-    /**
-     * Coût total pour acheter `qty` niveaux d'un amplificateur de clic.
-     */
     function getClickTierBulkCost(tier, qty) {
       const owned = state.clickTiers[tier.id] || 0;
       const r = CLICK_COST_MULT;
       return Math.floor(tier.baseCost * Math.pow(r, owned) * (Math.pow(r, qty) - 1) / (r - 1));
     }
 
-    /**
-     * Nombre maximum de niveaux achetables pour un amplificateur de clic.
-     */
     function getMaxClickTierLevels(tier) {
       const owned = state.clickTiers[tier.id] || 0;
       const r = CLICK_COST_MULT;
@@ -743,9 +817,7 @@
 
     function getClickTierBonus() {
       let bonus = 0;
-      CLICK_TIERS.forEach(t => {
-        bonus += (state.clickTiers[t.id] || 0) * CLICK_BONUS_PER_LEVEL;
-      });
+      CLICK_TIERS.forEach(t => { bonus += (state.clickTiers[t.id] || 0) * CLICK_BONUS_PER_LEVEL; });
       return bonus;
     }
 
@@ -753,9 +825,7 @@
       return 1 + getClickTierBonus() + state.permanentBonuses.clickMult + state.permanentBonuses.globalMult;
     }
 
-    function getClickPower() {
-      return 1 * getClickMultiplier();
-    }
+    function getClickPower() { return 1 * getClickMultiplier(); }
 
     function getCpsMultiplier() {
       return 1 + state.permanentBonuses.cpsMult + state.permanentBonuses.globalMult;
@@ -769,25 +839,20 @@
       return cps;
     }
 
-    function getCps() {
-      return getRawCps() * getCpsMultiplier();
-    }
+    function getCps() { return getRawCps() * getCpsMultiplier(); }
 
     function getProvidenceAvailable() {
       return state.providencePointsCumulesTotal - state.providencePointsSpent;
     }
 
-    function isMilestoneActive(depth) {
-      return state.providencePointsCumulesTotal >= depth;
-    }
-
+    /* ——— L'arbre se base sur le CUMUL HISTORIQUE (jamais réinitialisé) ——— */
     function isSkillRowUnlocked(minCumules) {
       return state.providencePointsCumulesTotal >= minCumules;
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        PROVIDENCE
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function grantRunProvidence(buildingId) {
       if (state.runProvidenceGranted[buildingId]) return;
@@ -807,68 +872,50 @@
       }
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        ACHATS — BÂTIMENTS
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function buyBuilding(id) {
       const b = BUILDINGS.find(x => x.id === id);
       if (!b || !isBuildingVisible(b)) return;
-
       const owned = state.buildings[id] || 0;
-
-      // Effondrement Temporel : limité à 1 niveau
       if (b.maxLevel && owned >= b.maxLevel) return;
 
-      // Calcul de la quantité à acheter selon le multiplicateur
       let qty = 1;
-      if (b.maxLevel) {
-        // Pour les bâtiments à niveau max, on achète toujours 1
-        qty = 1;
-      } else if (buyMultiplier === 'max') {
-        qty = getMaxBuildingLevels(b);
-      } else {
-        qty = buyMultiplier;
+      if (!b.maxLevel) {
+        if (buyMultiplier === 'max') qty = getMaxBuildingLevels(b);
+        else qty = buyMultiplier;
       }
-
       if (qty <= 0) return;
 
-      // Coût total
       const totalCost = qty === 1
         ? getBuildingCost(b, owned)
         : getBuildingBulkCost(b, owned, qty);
-
       if (state.seconds < totalCost) return;
 
       state.seconds -= totalCost;
       state.buildings[id] = owned + qty;
-
-      // Pour l'Effondrement Temporel, on appelle onBuildingPurchased une seule fois
       onBuildingPurchased(b);
       saveGame();
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        ACHATS — AMPLIFICATEURS DE CLIC
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function buyClickTier(id) {
       const tier = CLICK_TIERS.find(t => t.id === id);
       if (!tier || !isClickTierVisible(tier)) return;
 
       let qty = 1;
-      if (buyMultiplier === 'max') {
-        qty = getMaxClickTierLevels(tier);
-      } else {
-        qty = buyMultiplier;
-      }
-
+      if (buyMultiplier === 'max') qty = getMaxClickTierLevels(tier);
+      else qty = buyMultiplier;
       if (qty <= 0) return;
 
       const totalCost = qty === 1
         ? getClickTierCost(tier)
         : getClickTierBulkCost(tier, qty);
-
       if (state.seconds < totalCost) return;
 
       state.seconds -= totalCost;
@@ -876,9 +923,9 @@
       saveGame();
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        COMPÉTENCES (ARBRE DE PROVIDENCE)
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function getSkillLevel(skillId) {
       const v = state.skills[skillId];
@@ -894,28 +941,28 @@
       if (getProvidenceAvailable() < skill.cost) return;
 
       state.providencePointsSpent += skill.cost;
+      if (skill.maxLevel) state.skills[skill.id] = current + 1;
+      else state.skills[skill.id] = true;
 
-      if (skill.maxLevel) {
-        state.skills[skill.id] = current + 1;
-      } else {
-        state.skills[skill.id] = true;
-      }
       recomputeBonusesFromSkills();
       saveGame();
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        WARP (PRESTIGE)
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function doWarp() {
       if (state.providencePointsPending < 1) return;
       if (!confirm('Initier l\'Effondrement ? Les SP et bâtiments seront réinitialisés. Les points en attente seront validés.')) return;
 
+      // Valider les PP en attente → cumul historique (ne diminue jamais)
       state.providencePointsCumulesTotal += state.providencePointsPending;
       state.providencePointsPending = 0;
+
+      // Reset de la run
       state.seconds = 0;
-      BUILDINGS.forEach(b => { state.buildings[b.id] = 0; });
+      BUILDINGS.forEach(b  => { state.buildings[b.id]   = 0; });
       CLICK_TIERS.forEach(t => { state.clickTiers[t.id] = 0; });
       state.runProvidenceGranted = {};
       state.metaTreeUnlocked = false;
@@ -924,15 +971,15 @@
       // Ancrage Temporel I : démarre avec 5 Déjà-vu et 1 Boucle Causale
       if (state.skills['anchor_i']) {
         state.buildings['dejavu'] = 5;
-        state.buildings['loop'] = 1;
+        state.buildings['loop']   = 1;
       }
 
       saveGame();
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        CLIC PRINCIPAL
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function onParadoxTick(clientX, clientY) {
       const power = getClickPower();
@@ -947,14 +994,14 @@
       el.className = 'float-text';
       el.textContent = text;
       el.style.left = (x - rect.left) + 'px';
-      el.style.top = (y - rect.top) + 'px';
+      el.style.top  = (y - rect.top)  + 'px';
       zone.appendChild(el);
       setTimeout(() => el.remove(), 800);
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        BONUS PERMANENTS
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function recomputeBonusesFromSkills() {
       state.permanentBonuses = { clickMult: 0, cpsMult: 0, globalMult: 0, costReduction: 0 };
@@ -965,23 +1012,46 @@
           if (skill.type === 'click_mult' && skill.maxLevel) {
             for (let i = 0; i < lvl; i++) state.permanentBonuses.clickMult += skill.values[i];
           } else if (state.skills[skill.id]) {
-            if (skill.type === 'cps_mult')       state.permanentBonuses.cpsMult       += skill.value;
-            if (skill.type === 'global_mult')     state.permanentBonuses.globalMult    += skill.value;
-            if (skill.type === 'cost_reduction')  state.permanentBonuses.costReduction += skill.value;
-            // warp_anchor n'a pas de bonus numérique direct
+            if (skill.type === 'cps_mult')      state.permanentBonuses.cpsMult      += skill.value;
+            if (skill.type === 'global_mult')    state.permanentBonuses.globalMult   += skill.value;
+            if (skill.type === 'cost_reduction') state.permanentBonuses.costReduction += skill.value;
           }
         });
       });
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
+       GAIN OFFLINE
+    ══════════════════════════════════════════════════════ */
+
+    function applyOfflineGain() {
+      const now = Date.now();
+      const last = state.lastSaveTimestamp || now;
+      const elapsedMs = now - last;
+      const elapsedSec = elapsedMs / 1000;
+
+      if (elapsedSec < OFFLINE_MIN_SECONDS) return;
+
+      const cps = getCps();
+      if (cps <= 0) return;
+
+      const gained = cps * elapsedSec;
+      state.seconds += gained;
+
+      // Afficher la modale
+      document.getElementById('offline-time-display').textContent = formatDuration(elapsedSec);
+      document.getElementById('offline-gain-display').textContent = '+' + formatNum(gained) + ' SP';
+      document.getElementById('offline-modal').style.display = 'flex';
+    }
+
+    /* ══════════════════════════════════════════════════════
        SAUVEGARDE / CHARGEMENT
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function migrateFromOlderSave(loaded) {
       const s = createFreshState();
-      s.seconds = loaded.seconds ?? 0;
-      s.buildings = { ...s.buildings, ...(loaded.buildings || {}) };
+      s.seconds   = loaded.seconds ?? 0;
+      s.buildings  = { ...s.buildings,  ...(loaded.buildings  || {}) };
       s.clickTiers = { ...s.clickTiers, ...(loaded.clickTiers || {}) };
 
       if (loaded.clickTiers) {
@@ -1009,12 +1079,13 @@
         (s.buildings.collapse >= 1)
       );
       s.runProvidenceGranted = loaded.runProvidenceGranted ?? {};
+      s.lastSaveTimestamp    = loaded.lastSaveTimestamp    ?? Date.now();
 
       const oldSkills = loaded.skills || {};
       s.skills = {};
-      if (oldSkills.anchor_i)  s.skills.anchor_i  = true;
-      if (oldSkills.click_eff) s.skills.click_eff = typeof oldSkills.click_eff === 'number' ? oldSkills.click_eff : 1;
-      if (oldSkills.overflow)  s.skills.overflow  = true;
+      if (oldSkills.anchor_i)   s.skills.anchor_i   = true;
+      if (oldSkills.click_eff)  s.skills.click_eff  = typeof oldSkills.click_eff === 'number' ? oldSkills.click_eff : 1;
+      if (oldSkills.overflow)   s.skills.overflow   = true;
       if (oldSkills.multiverse) s.skills.multiverse = true;
       if (oldSkills.anchor || oldSkills.anchor_temporal) s.skills.anchor = true;
 
@@ -1023,33 +1094,39 @@
     }
 
     function saveGame() {
-      try {
-        localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-      } catch (_) {}
+      state.lastSaveTimestamp = Date.now();
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (_) {}
     }
 
     function loadGame() {
       try {
+        // Anti-cache : cherche d'abord la clé courante, puis les anciennes
         let raw = localStorage.getItem(SAVE_KEY);
         if (!raw) {
-          ['paradoxFactory_v5', 'paradoxFactory_v4', 'paradoxFactory_v3', 'paradoxFactory_v2', 'paradoxFactory_v1'].forEach(key => {
+          ['paradoxFactory_v6', 'paradoxFactory_v5', 'paradoxFactory_v4',
+           'paradoxFactory_v3', 'paradoxFactory_v2', 'paradoxFactory_v1'].forEach(key => {
             if (!raw) raw = localStorage.getItem(key);
           });
         }
         if (!raw) return;
         const loaded = JSON.parse(raw);
+
+        // Si la version du code est différente de celle sauvegardée,
+        // on migre proprement sans écraser la progression
         state = migrateFromOlderSave(loaded);
+        state.gameVersion = GAME_VERSION; // marque la nouvelle version
       } catch (_) {}
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        OUTILS DEV
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function devWipe() {
       if (!confirm('WIPE TOTAL : effacer toute la progression ?')) return;
       localStorage.removeItem(SAVE_KEY);
-      ['paradoxFactory_v5', 'paradoxFactory_v4', 'paradoxFactory_v3', 'paradoxFactory_v2', 'paradoxFactory_v1'].forEach(k => localStorage.removeItem(k));
+      ['paradoxFactory_v6', 'paradoxFactory_v5', 'paradoxFactory_v4',
+       'paradoxFactory_v3', 'paradoxFactory_v2', 'paradoxFactory_v1'].forEach(k => localStorage.removeItem(k));
       state = createFreshState();
       renderAll(true);
       saveGame();
@@ -1072,11 +1149,11 @@
       saveGame();
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        RENDU — CONSTRUCTION STATIQUE
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
-    let buildingsBuilt = false;
+    let buildingsBuilt  = false;
     let clickTiersBuilt = false;
 
     function buildStaticUI() {
@@ -1087,7 +1164,7 @@
           btn.type = 'button';
           btn.className = 'building-btn';
           btn.dataset.id = b.id;
-          if (b.isCollapse) btn.classList.add('collapse-building');
+          if (b.isCollapse)       btn.classList.add('collapse-building');
           if (b.grantsProvidence) btn.classList.add('providence-building');
           container.appendChild(btn);
         });
@@ -1125,9 +1202,9 @@
       });
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        RENDU — MISE À JOUR DYNAMIQUE
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function updateBuildingsUI() {
       document.querySelectorAll('.building-btn').forEach(btn => {
@@ -1142,45 +1219,35 @@
         if (b.maxLevel && owned >= b.maxLevel) {
           btn.disabled = true;
           btn.classList.add('maxed-building');
-          const rateLabel = 'Débloque Providence · 0/s';
           btn.innerHTML = `
             <strong>${b.name}</strong> · Niv. ${owned} <span style="color:var(--success);font-size:0.7rem">[MAX]</span><br>
             <span class="cost">—</span><br>
-            <span class="owned">${rateLabel}</span>
+            <span class="owned">Débloque Providence · 0/s</span>
           `;
           return;
         }
 
         btn.classList.remove('maxed-building');
 
-        // Calcul de la quantité et du coût selon le multiplicateur
         let qty = 1;
-        if (b.maxLevel) {
-          qty = 1; // toujours 1 pour les bâtiments à niveau max non encore atteint
-        } else if (buyMultiplier === 'max') {
-          qty = getMaxBuildingLevels(b);
-        } else {
-          qty = buyMultiplier;
+        if (!b.maxLevel) {
+          if (buyMultiplier === 'max') qty = getMaxBuildingLevels(b);
+          else qty = buyMultiplier;
         }
 
         let totalCost, canBuy;
         if (qty <= 0) {
-          totalCost = getBuildingCost(b, owned);
-          canBuy = false;
+          totalCost = getBuildingCost(b, owned); canBuy = false;
         } else if (qty === 1) {
-          totalCost = getBuildingCost(b, owned);
-          canBuy = state.seconds >= totalCost;
+          totalCost = getBuildingCost(b, owned); canBuy = state.seconds >= totalCost;
         } else {
-          totalCost = getBuildingBulkCost(b, owned, qty);
-          canBuy = state.seconds >= totalCost;
+          totalCost = getBuildingBulkCost(b, owned, qty); canBuy = state.seconds >= totalCost;
         }
 
         btn.disabled = !canBuy;
-
         const rateLabel = b.isCollapse
           ? 'Débloque Providence · 0/s'
           : `+${b.baseCps < 1 ? b.baseCps.toFixed(2) : formatNum(b.baseCps)}/s`;
-
         const qtyLabel = qty > 1 ? ` (×${qty})` : '';
 
         btn.innerHTML = `
@@ -1199,59 +1266,24 @@
         if (!visible) return;
 
         const level = state.clickTiers[t.id] || 0;
-
-        let qty = 1;
-        if (buyMultiplier === 'max') {
-          qty = getMaxClickTierLevels(t);
-        } else {
-          qty = buyMultiplier;
-        }
+        let qty = buyMultiplier === 'max' ? getMaxClickTierLevels(t) : buyMultiplier;
 
         let totalCost, canBuy;
         if (qty <= 0) {
-          totalCost = getClickTierCost(t);
-          canBuy = false;
+          totalCost = getClickTierCost(t); canBuy = false;
         } else if (qty === 1) {
-          totalCost = getClickTierCost(t);
-          canBuy = state.seconds >= totalCost;
+          totalCost = getClickTierCost(t); canBuy = state.seconds >= totalCost;
         } else {
-          totalCost = getClickTierBulkCost(t, qty);
-          canBuy = state.seconds >= totalCost;
+          totalCost = getClickTierBulkCost(t, qty); canBuy = state.seconds >= totalCost;
         }
 
         btn.disabled = !canBuy;
-
         const qtyLabel = qty > 1 ? ` (×${qty})` : '';
-
         btn.innerHTML = `
           <strong>${t.name}</strong> niv. ${level}${qtyLabel}<br>
           <span class="cost">${formatNum(totalCost)} SP · +${(CLICK_BONUS_PER_LEVEL * 100).toFixed(0)}%/niv.</span>
         `;
       });
-    }
-
-    function renderMilestones() {
-      const track = document.getElementById('milestone-track');
-      track.innerHTML = '';
-      const cumul = state.providencePointsCumulesTotal;
-      MILESTONES.forEach(m => {
-        const active = isMilestoneActive(m.depth);
-        const node = document.createElement('div');
-        node.className = 'milestone-node' + (active ? ' active' : '');
-        node.innerHTML = `
-          <div class="depth">${m.depth}</div>
-          <div class="label">${m.label}</div>
-          <div class="label" style="margin-top:4px;font-size:0.55rem">
-            ${active ? '✓ Profondeur atteinte' : `${cumul} / ${m.depth} PP cumulés`}
-          </div>
-        `;
-        track.appendChild(node);
-      });
-
-      document.getElementById('pp-cumules').textContent = state.providencePointsCumulesTotal;
-      document.getElementById('pp-pending').textContent = state.providencePointsPending;
-      document.getElementById('pp-spent').textContent = state.providencePointsSpent;
-      document.getElementById('pp-available').textContent = getProvidenceAvailable();
     }
 
     function renderSkillTree() {
@@ -1271,6 +1303,7 @@
 
       SKILL_TREE.forEach(row => {
         const rowEl = document.createElement('div');
+        // Déverrouillage basé sur le CUMUL HISTORIQUE (jamais réinitialisé par un Warp)
         const unlocked = isSkillRowUnlocked(row.minCumules);
         rowEl.className = 'tree-row' + (unlocked ? '' : ' row-locked');
         rowEl.dataset.label = row.label;
@@ -1280,11 +1313,11 @@
           btn.type = 'button';
           btn.className = 'skill-btn';
 
-          const level = getSkillLevel(skill.id);
-          const maxed = skill.maxLevel ? level >= skill.maxLevel : !!state.skills[skill.id];
+          const level  = getSkillLevel(skill.id);
+          const maxed  = skill.maxLevel ? level >= skill.maxLevel : !!state.skills[skill.id];
           const canBuy = unlocked && !maxed && getProvidenceAvailable() >= skill.cost;
 
-          if (maxed) btn.classList.add('purchased');
+          if (maxed)   btn.classList.add('purchased');
           else if (canBuy) btn.classList.add('available');
           btn.disabled = !canBuy;
 
@@ -1317,32 +1350,35 @@
       const pending = state.providencePointsPending;
       btn.disabled = pending < 1;
       btn.classList.toggle('ready', pending >= 1);
-      btn.textContent = pending >= 1
-        ? `Initier l'Effondrement (Warp) · +${pending} PP`
-        : 'Initier l\'Effondrement (Warp) · aucun point en attente';
+      btn.title = pending >= 1
+        ? `Initier l'Effondrement · +${pending} PP`
+        : 'Aucun point en attente';
+      btn.textContent = pending >= 1 ? `⚡ WARP +${pending}PP` : '⚡ WARP';
     }
 
-    function renderAll(forceRebuildTree) {
-      document.getElementById('seconds-display').textContent = formatNum(state.seconds);
-      document.getElementById('cps-display').textContent = formatNum(getCps());
-      document.getElementById('click-power-display').textContent = formatNum(getClickPower());
+    function renderAll() {
+      document.getElementById('seconds-display').textContent      = formatNum(state.seconds);
+      document.getElementById('cps-display').textContent          = formatNum(getCps());
+      document.getElementById('click-power-display').textContent  = formatNum(getClickPower());
+      document.getElementById('pp-cumules').textContent   = state.providencePointsCumulesTotal;
+      document.getElementById('pp-pending').textContent   = state.providencePointsPending;
+      document.getElementById('pp-spent').textContent     = state.providencePointsSpent;
+      document.getElementById('pp-available').textContent = getProvidenceAvailable();
       updateBuildingsUI();
       updateClickTiersUI();
-      renderMilestones();
       renderSkillTree();
       updateWarpButton();
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        HOLD TO CLICK
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     let holdTimer = null;
 
     function startHold(e) {
       e.preventDefault();
-      const btn = document.getElementById('paradox-btn');
-      btn.classList.add('charging');
+      document.getElementById('paradox-btn').classList.add('charging');
       const tick = ev => {
         const x = ev.clientX ?? (ev.touches && ev.touches[0]?.clientX);
         const y = ev.clientY ?? (ev.touches && ev.touches[0]?.clientY);
@@ -1353,40 +1389,44 @@
     }
 
     function stopHold() {
-      const btn = document.getElementById('paradox-btn');
-      btn.classList.remove('charging');
-      if (holdTimer) {
-        clearInterval(holdTimer);
-        holdTimer = null;
-      }
+      document.getElementById('paradox-btn').classList.remove('charging');
+      if (holdTimer) { clearInterval(holdTimer); holdTimer = null; }
     }
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        BOUCLES PRINCIPALES
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     setInterval(() => {
       const cps = getCps();
       if (cps > 0) state.seconds += cps;
     }, CPS_TICK_MS);
 
-    setInterval(() => renderAll(), UI_TICK_MS);
-
+    setInterval(renderAll, UI_TICK_MS);
     setInterval(saveGame, 5000);
 
-    /* ——————————————————————————————————————
+    /* ══════════════════════════════════════════════════════
        INITIALISATION
-    —————————————————————————————————————— */
+    ══════════════════════════════════════════════════════ */
 
     function init() {
       loadGame();
       buildStaticUI();
 
+      // Gain offline : calculé après le chargement de la sauvegarde
+      applyOfflineGain();
+
+      // Fermeture de la modale offline
+      document.getElementById('offline-modal-close').addEventListener('click', () => {
+        document.getElementById('offline-modal').style.display = 'none';
+        saveGame();
+      });
+
       const btn = document.getElementById('paradox-btn');
       btn.addEventListener('mousedown', startHold);
       btn.addEventListener('touchstart', startHold, { passive: false });
-      window.addEventListener('mouseup', stopHold);
-      window.addEventListener('touchend', stopHold);
+      window.addEventListener('mouseup',    stopHold);
+      window.addEventListener('touchend',   stopHold);
       window.addEventListener('mouseleave', stopHold);
 
       document.getElementById('warp-btn').addEventListener('click', doWarp);
@@ -1394,7 +1434,7 @@
       document.getElementById('dev-give-btn').addEventListener('click', devGiveSP);
       document.getElementById('dev-give-pp-btn').addEventListener('click', devGivePP);
 
-      renderAll(true);
+      renderAll();
     }
 
     init();

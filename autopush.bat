@@ -6,6 +6,9 @@
 
 title AutoPush - Timeinc [en cours...]
 
+:: Se placer dans le bon répertoire (là où se trouve ce script)
+cd /d "%~dp0"
+
 :loop
 echo.
 echo [%date% %time%] Sauvegarde en cours...
